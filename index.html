@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lab3_AJAX</title>
+</head>
+<body>
+    <h1 style="text-align: center;">Лабораторна робота №3</h1>
+
+    <h4 style="color: blue">Товари обраного виробника:</h4>
+    <form onsubmit="loadVendor(event)" style="border: 2px solid black; padding: 10px; width: 300px;">
+        <input type="text" value="Asus" name="vendorName" id="vendorName">
+        <button type="submit" style="background-color: yellow; color: black;">Відправити</button>
+    </form>
+    <div id="vendorResult"></div>
+
+    <br><br>
+
+    <h4 style="color:blue">Товари обраної категорії:</h4>
+    <form onsubmit="loadCategory(event)" style="border: 2px solid black; padding: 10px; width: 300px;">
+        <input type="text" value="Memory" name="categoryName" id="categoryName">
+        <button type="submit" style="background-color: aqua; color: black;">Відправити</button>
+    </form>
+    <div id="categoryResult"></div>
+
+    <br><br>
+
+    <h4 style="color:red">Товари в обраному ціновому діапазоні:</h4>
+    <form onsubmit="loadPriceRange(event)" style="border: 2px solid black; padding: 10px; width: 300px;">
+        <input type="text" name="pricerange" id="pricerange">
+        <button type="submit" style="background-color: orange; color: black">Відправити</button>
+    </form>
+    <div id="priceResult"></div>
+
+    <script>
+        function loadVendor(event) {
+            event.preventDefault();
+            const name = document.getElementById('vendorName').value;
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', `get.php?vendorName=${encodeURIComponent(name)}`, true);
+            xhr.onload = function() {
+                document.getElementById('vendorResult').innerHTML = xhr.responseText;
+            };
+            xhr.send();
+        }
+
+        function loadCategory(event) {
+            event.preventDefault();
+            const name = document.getElementById('categoryName').value;
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', `get.php?categoryName=${encodeURIComponent(name)}&format=xml`, true);
+            xhr.onload = function() {
+                const xml = xhr.responseXML;
+                const rows = xml.getElementsByTagName('row');
+                let html = '<table border="1"><thead><tr><th>ID</th><th>Категорія</th><th>Товар</th></tr></thead><tbody>';
+                for (let row of rows) {
+                    html += `<tr><td>${row.getElementsByTagName('id')[0].textContent}</td>` +
+                            `<td>${row.getElementsByTagName('name')[0].textContent}</td>` +
+                            `<td>${row.getElementsByTagName('item')[0].textContent}</td></tr>`;
+                }
+                html += '</tbody></table>';
+                document.getElementById('categoryResult').innerHTML = html;
+            };
+            xhr.send();
+        }
+
+        function loadPriceRange(event) {
+            event.preventDefault();
+            const range = document.getElementById('pricerange').value;
+            fetch(`get.php?pricerange=${encodeURIComponent(range)}&format=json`)
+                .then(response => response.json())
+                .then(data => {
+                    let html = '<table border="1"><thead><tr><th>ID</th><th>Назва</th><th>Ціна</th></tr></thead><tbody>';
+                    for (let item of data) {
+                        html += `<tr><td>${item.id_items}</td><td>${item.name}</td><td>${item.price}</td></tr>`;
+                    }
+                    html += '</tbody></table>';
+                    document.getElementById('priceResult').innerHTML = html;
+                });
+        }
+    </script>
+</body>
+</html>
