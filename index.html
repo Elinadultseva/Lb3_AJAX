@@ -38,7 +38,7 @@
             event.preventDefault();
             const name = document.getElementById('vendorName').value;
             const xhr = new XMLHttpRequest();
-            xhr.open('GET', `get.php?vendorName=${encodeURIComponent(name)}`, true);
+            xhr.open('GET', `get.php?vendorName=${name}`, true);
             xhr.onload = function() {
                 document.getElementById('vendorResult').innerHTML = xhr.responseText;
             };
@@ -49,7 +49,7 @@
             event.preventDefault();
             const name = document.getElementById('categoryName').value;
             const xhr = new XMLHttpRequest();
-            xhr.open('GET', `get.php?categoryName=${encodeURIComponent(name)}&format=xml`, true);
+            xhr.open('GET', `get.php?categoryName=${name}&format=xml`, true);
             xhr.onload = function() {
                 const xml = xhr.responseXML;
                 const rows = xml.getElementsByTagName('row');
@@ -68,7 +68,7 @@
         function loadPriceRange(event) {
             event.preventDefault();
             const range = document.getElementById('pricerange').value;
-            fetch(`get.php?pricerange=${encodeURIComponent(range)}&format=json`)
+            fetch(`get.php?pricerange=${range}&format=json`)
                 .then(response => response.json())
                 .then(data => {
                     let html = '<table border="1"><thead><tr><th>ID</th><th>Назва</th><th>Ціна</th></tr></thead><tbody>';
